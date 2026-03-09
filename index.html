@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>e-Statement Download Flow — Amar Bank Bisnis</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:#EEF2F7;
+  padding:40px 24px 64px;
+  color:#1E293B;
+}
+
+.wrap { max-width:680px; margin:0 auto; }
+
+/* header */
+.hdr { margin-bottom:36px; }
+.pill {
+  display:inline-flex;align-items:center;gap:6px;
+  background:#1B3A6B;color:#fff;
+  font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 14px;border-radius:100px;margin-bottom:10px;
+}
+.hdr h1 { font-size:22px;font-weight:800;color:#1B3A6B; }
+.hdr p  { font-size:13px;color:#64748B;margin-top:3px; }
+
+/* ─── flow column ─────────────────── */
+.flow { display:flex;flex-direction:column;align-items:center;gap:0; }
+
+/* connector */
+.conn {
+  width:2px;background:#94A3B8;flex-shrink:0;
+}
+.arrow-tip {
+  width:0;height:0;
+  border-left:7px solid transparent;
+  border-right:7px solid transparent;
+  border-top:10px solid #94A3B8;
+  flex-shrink:0;
+}
+.connector { display:flex;flex-direction:column;align-items:center; }
+
+/* nodes */
+.node {
+  border-radius:16px;padding:16px 26px;text-align:center;
+  position:relative;width:100%;
+  transition:transform .15s,box-shadow .15s;
+}
+.node:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.13);}
+
+.n-icon  { font-size:22px;display:block;margin-bottom:6px; }
+.n-title { font-size:14px;font-weight:700;line-height:1.35; }
+.n-sub   { font-size:12px;font-weight:500;margin-top:5px;opacity:.72;line-height:1.45; }
+
+.n-start {
+  background:#1B3A6B;color:#fff;
+  border-radius:100px;padding:15px 40px;
+  box-shadow:0 6px 24px rgba(27,58,107,.35);
+}
+.n-screen {
+  background:linear-gradient(135deg,#1B3A6B,#1E5FAD);
+  color:#fff;border:2px solid rgba(255,255,255,.15);
+  box-shadow:0 6px 24px rgba(30,95,173,.28);
+}
+.n-action {
+  background:#fff;border:2px solid #E2E8F0;color:#1E293B;
+  box-shadow:0 3px 14px rgba(0,0,0,.07);
+}
+.n-end {
+  background:linear-gradient(135deg,#059669,#10B981);
+  color:#fff;border-radius:100px;padding:15px 40px;
+  box-shadow:0 6px 24px rgba(5,150,105,.3);
+}
+
+/* step badge */
+.badge {
+  position:absolute;top:-10px;left:-10px;
+  width:22px;height:22px;border-radius:50%;
+  background:#1B3A6B;color:#fff;
+  font-size:10px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(27,58,107,.4);z-index:3;
+}
+
+/* ─── DECISION diamond ─── */
+.diamond-wrap {
+  position:relative;width:220px;height:110px;
+  display:flex;align-items:center;justify-content:center;
+}
+.diamond {
+  width:220px;height:110px;
+  background:#FEF3C7;border:2.5px solid #D97706;
+  transform:rotate(45deg) scale(.72);
+  border-radius:10px;
+  position:absolute;
+}
+.diamond-text {
+  position:relative;z-index:2;text-align:center;
+  font-size:13px;font-weight:700;color:#92400E;line-height:1.35;
+  pointer-events:none;
+}
+.d-badge {
+  position:absolute;top:2px;left:50%;transform:translateX(-50%);
+  width:22px;height:22px;border-radius:50%;
+  background:#D97706;color:#fff;
+  font-size:10px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(217,119,6,.4);z-index:4;
+}
+
+/* ─── branch ─── */
+.branch {
+  width:100%;display:flex;align-items:flex-start;
+  justify-content:center;gap:0;
+}
+.bcol { flex:1;display:flex;flex-direction:column;align-items:center; }
+
+/* branch label */
+.blabel {
+  font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 11px;border-radius:100px;margin-bottom:6px;white-space:nowrap;
+}
+.bl-doc  { background:#DBEAFE;color:#1E40AF; }
+.bl-acc  { background:#EDE9FE;color:#5B21B6; }
+
+/* divider between branches */
+.vdiv { width:1.5px;background:#CBD5E1;align-self:stretch;margin:0 12px;border-radius:1px; }
+
+/* ─── format card grid ─── */
+.fgrid { display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px; }
+.fc {
+  border-radius:9px;padding:5px 11px;
+  font-size:11px;font-weight:700;border:2px solid;
+  display:flex;align-items:center;gap:5px;
+}
+.fc-pdf  { background:#FFF1F0;border-color:#FF7875;color:#A8071A; }
+.fc-xlsx { background:#F6FFED;border-color:#73D13D;color:#237804; }
+.fc-csv  { background:#E6F4FF;border-color:#4096FF;color:#003EB3; }
+.fc-t    { background:#fff;border-color:#CBD5E1;color:#374151; }
+
+/* ─── output cards ─── */
+.ogrid { display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px; }
+.oc {
+  border-radius:12px;padding:12px 14px;text-align:center;
+  border:2px solid;min-width:88px;max-width:105px;
+  transition:transform .15s,box-shadow .15s;
+}
+.oc:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.11);}
+.oc .oi { font-size:18px;display:block;margin-bottom:4px; }
+.oc .ot { font-size:11.5px;font-weight:700;line-height:1.3; }
+.oc .os { font-size:9.5px;font-weight:500;margin-top:3px;opacity:.7;line-height:1.3; }
+
+.oc-pdf  { background:#FFF1F0;border-color:#FF7875;color:#A8071A; }
+.oc-xlsx { background:#F6FFED;border-color:#73D13D;color:#237804; }
+.oc-csv  { background:#E6F4FF;border-color:#4096FF;color:#003EB3; }
+.oc-acc  { background:#FFF7E6;border-color:#FFA940;color:#873800; }
+.oc-jur  { background:#F0F5FF;border-color:#85A5FF;color:#10239E; }
+.oc-zah  { background:#FFF0F6;border-color:#FF85C2;color:#9E1068; }
+.oc-buku { background:#F6FFED;border-color:#95DE64;color:#135200; }
+.oc-xero { background:#E6FFFB;border-color:#5CDBD3;color:#00474F; }
+
+/* merge bar */
+.merge { width:55%;height:2px;background:linear-gradient(to right,transparent 5%,#94A3B8 30%,#94A3B8 70%,transparent 95%); }
+
+/* screen node for branch */
+.n-screen-sm {
+  background:linear-gradient(135deg,#1B3A6B,#1E5FAD);
+  color:#fff;border:2px solid rgba(255,255,255,.15);
+  box-shadow:0 4px 18px rgba(30,95,173,.25);
+  border-radius:14px;padding:14px 20px;text-align:center;
+  position:relative;width:100%;
+  transition:transform .15s,box-shadow .15s;
+}
+.n-screen-sm:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(30,95,173,.3);}
+
+/* footer */
+footer {
+  margin-top:24px;background:#fff;border-radius:12px;
+  border:1px solid #E2E8F0;padding:14px 20px;
+  font-size:11.5px;color:#64748B;line-height:1.7;text-align:center;
+}
+footer strong{color:#1B3A6B;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="pill">📄 Amar Bank Bisnis · ST-1</div>
+    <h1>Flowchart Download e-Statement</h1>
+    <p>Alur user memilih periode, format, lalu mengunduh file</p>
+  </div>
+
+  <div class="flow">
+
+    <!-- START -->
+    <div class="node n-start">
+      <span class="n-icon">📱</span>
+      <div class="n-title">Buka Aplikasi Amar Bank Bisnis</div>
+    </div>
+
+    <div class="connector"><div class="conn" style="height:28px"></div><div class="arrow-tip"></div></div>
+
+    <!-- STEP 1 -->
+    <div class="node n-action" style="position:relative">
+      <span class="badge">1</span>
+      <span class="n-icon">📋</span>
+      <div class="n-title">Tap menu <strong>e-Statement</strong></div>
+      <div class="n-sub">Dari menu utama atau halaman Riwayat Transaksi</div>
+    </div>
+
+    <div class="connector"><div class="conn" style="height:28px"></div><div class="arrow-tip"></div></div>
+
+    <!-- STEP 2 -->
+    <div class="node n-screen" style="position:relative">
+      <span class="badge">2</span>
+      <span class="n-icon">📅</span>
+      <div class="n-title">Pilih Periode Bulan</div>
+      <div class="n-sub" style="color:rgba(255,255,255,.75)">Pilih dari daftar bulan yang tersedia · contoh: Februari 2026</div>
+    </div>
+
+    <div class="connector"><div class="conn" style="height:28px"></div><div class="arrow-tip"></div></div>
+
+    <!-- STEP 3 — Decision -->
+    <div class="diamond-wrap">
+      <div class="d-badge">3</div>
+      <div class="diamond"></div>
+      <div class="diamond-text">Tujuan<br>download?</div>
+    </div>
+
+    <!-- BRANCH -->
+    <div class="branch" style="margin-top:2px">
+
+      <!-- LEFT: Simpan Dokumen -->
+      <div class="bcol">
+        <div class="connector"><div class="conn" style="height:12px"></div></div>
+        <span class="blabel bl-doc">📂 Simpan Dokumen</span>
+        <div class="connector"><div class="conn" style="height:14px"></div><div class="arrow-tip"></div></div>
+
+        <!-- 4a -->
+        <div class="n-screen-sm" style="max-width:280px">
+          <span class="badge">4a</span>
+          <span class="n-icon">🎛️</span>
+          <div class="n-title">Pilih Format File</div>
+          <div class="fgrid">
+            <span class="fc fc-pdf">📄 PDF</span>
+            <span class="fc fc-xlsx">📊 XLSX</span>
+            <span class="fc fc-csv">📋 CSV</span>
+          </div>
+        </div>
+
+        <div class="connector"><div class="conn" style="height:22px"></div><div class="arrow-tip"></div></div>
+
+        <div class="ogrid">
+          <div class="oc oc-pdf">
+            <span class="oi">📄</span>
+            <div class="ot">PDF</div>
+            <div class="os">Laporan siap cetak</div>
+          </div>
+          <div class="oc oc-xlsx">
+            <span class="oi">📊</span>
+            <div class="ot">XLSX v2</div>
+            <div class="os">Siap kalkulasi & pivot</div>
+          </div>
+          <div class="oc oc-csv">
+            <span class="oi">📋</span>
+            <div class="ot">CSV</div>
+            <div class="os">Kompatibel semua platform</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIVIDER -->
+      <div class="vdiv"></div>
+
+      <!-- RIGHT: Aplikasi Akuntansi -->
+      <div class="bcol">
+        <div class="connector"><div class="conn" style="height:12px"></div></div>
+        <span class="blabel bl-acc">🏦 Aplikasi Akuntansi</span>
+        <div class="connector"><div class="conn" style="height:14px"></div><div class="arrow-tip"></div></div>
+
+        <!-- 4b -->
+        <div class="n-screen-sm" style="max-width:280px">
+          <span class="badge">4b</span>
+          <span class="n-icon">⚙️</span>
+          <div class="n-title">Pilih Aplikasi Akuntansi</div>
+          <div class="fgrid" style="margin-top:8px">
+            <span class="fc fc-t">🟠 Accurate</span>
+            <span class="fc fc-t">🔵 Jurnal.id</span>
+            <span class="fc fc-t">🟣 Zahir</span>
+            <span class="fc fc-t">🟢 Buku Kas</span>
+            <span class="fc fc-t">🩵 Xero</span>
+          </div>
+          <div class="n-sub" style="color:rgba(255,255,255,.7);font-size:10.5px;margin-top:8px">
+            Format CSV otomatis disesuaikan<br>dengan template tiap software
+          </div>
+        </div>
+
+        <div class="connector"><div class="conn" style="height:22px"></div><div class="arrow-tip"></div></div>
+
+        <div class="ogrid">
+          <div class="oc oc-acc">
+            <span class="oi">🟠</span>
+            <div class="ot">Accurate</div>
+            <div class="os">CSV D/K</div>
+          </div>
+          <div class="oc oc-jur">
+            <span class="oi">🔵</span>
+            <div class="ot">Jurnal.id</div>
+            <div class="os">CSV ±amount</div>
+          </div>
+          <div class="oc oc-zah">
+            <span class="oi">🟣</span>
+            <div class="ot">Zahir</div>
+            <div class="os">CSV Zahir</div>
+          </div>
+          <div class="oc oc-buku">
+            <span class="oi">🟢</span>
+            <div class="ot">Buku Kas</div>
+            <div class="os">CSV simple</div>
+          </div>
+          <div class="oc oc-xero">
+            <span class="oi">🩵</span>
+            <div class="ot">Xero</div>
+            <div class="os">Bank stmt</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end branch -->
+
+    <!-- MERGE -->
+    <div class="merge" style="margin-top:6px"></div>
+    <div class="connector"><div class="conn" style="height:22px"></div><div class="arrow-tip"></div></div>
+
+    <!-- STEP 5 -->
+    <div class="node n-action" style="position:relative">
+      <span class="badge">5</span>
+      <span class="n-icon">⬇️</span>
+      <div class="n-title">Tap tombol <strong>Unduh</strong></div>
+      <div class="n-sub">File di-generate sesuai format yang dipilih</div>
+    </div>
+
+    <div class="connector"><div class="conn" style="height:28px"></div><div class="arrow-tip"></div></div>
+
+    <!-- END -->
+    <div class="node n-end">
+      <span class="n-icon">✅</span>
+      <div class="n-title">File Berhasil Diunduh</div>
+      <div class="n-sub" style="color:rgba(255,255,255,.75)">Tersimpan di perangkat · siap digunakan</div>
+    </div>
+
+  </div><!-- end flow -->
+
+  <footer>
+    <strong>Format dokumen</strong> (PDF · XLSX · CSV) untuk arsip & rekonsiliasi manual &nbsp;·&nbsp;
+    <strong>Format akuntansi</strong> sudah disesuaikan template masing-masing software —
+    langsung bisa diimport tanpa preprocessing tambahan
+  </footer>
+
+</div>
+</body>
+</html>
